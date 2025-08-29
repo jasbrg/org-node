@@ -224,6 +224,10 @@ Used by:
   :type 'string
   :package-version '(org-node . "3.7.1"))
 
+(defcustom org-node-property-mtime "MODIFIED"
+  "Name of a property for holding a modification-time timestamp."
+  :type 'string)
+
 
 ;;;; Filter
 
@@ -1152,6 +1156,17 @@ be sufficient to key-bind that one."
     (org-entry-put nil
                    org-node-property-crtime
                    (format-time-string (org-time-stamp-format t t)))))
+
+;;;###autoload
+(defun org-node-ensure-mtime-property ()
+  "If there is CREATED property on the entry at point add a MODIFIED, or update existing one."
+  (interactive "*" org-mode)
+  (org-element-lineage-map (org-element-at-point)
+      (lambda (el)
+        (if (or (org-entry-get el org-node-property-crtime)
+                (org-entry-get el org-node-property-mtime))
+            (org-entry-put el org-node-property-mtime
+                           (format-time-string (org-time-stamp-format t t)))))))
 
 (defun org-node-visit-random-1 ()
   "Visit a random node."
