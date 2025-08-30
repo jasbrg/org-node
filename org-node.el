@@ -1159,12 +1159,14 @@ be sufficient to key-bind that one."
 
 ;;;###autoload
 (defun org-node-ensure-mtime-property ()
-  "If there is CREATED property on the entry at point add a MODIFIED, or update existing one."
+  "Updates MODIFIED time for entry at point and its lineage."
   (interactive "*" org-mode)
   (org-element-lineage-map (org-element-at-point)
       (lambda (el)
-        (if (or (org-entry-get el org-node-property-crtime)
-                (org-entry-get el org-node-property-mtime))
+        (if (and (or (org-entry-get el org-node-property-crtime)
+                     (org-entry-get el org-node-property-mtime))
+                 (not (string= (org-entry-get el org-node-property-crtime)
+                               (format-time-string (org-time-stamp-format t t)))))
             (org-entry-put el org-node-property-mtime
                            (format-time-string (org-time-stamp-format t t)))))))
 
